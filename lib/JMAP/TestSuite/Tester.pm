@@ -75,7 +75,7 @@ sub test_query {
       superhashof({
         accountId  => jstr($account->accountId),
         queryState => jstr(),
-        total      => jnum,
+        ($args->{calculateTotal} ? (total => jnum) : ()),
         position   => jnum(0),
         canCalculateChanges => jbool(),
         %$expect, # can override position

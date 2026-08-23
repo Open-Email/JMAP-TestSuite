@@ -21,7 +21,7 @@ test {
       accounts => {
         $account->accountId => superhashof({
           name => jstr,
-          isPrimary => jbool,
+          isPersonal => jbool,
           isReadOnly => jbool,
           accountCapabilities => superhashof({
             'urn:ietf:params:jmap:core' => {},

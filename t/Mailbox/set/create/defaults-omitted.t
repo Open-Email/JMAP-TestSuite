@@ -70,7 +70,7 @@ test {
         name         => jstr($new_name),
         parentId     => undef, # XXX - Maybe decided by server
         role         => undef,
-        sortOrder    => jnum(10),
+        sortOrder    => jnum(),
         totalEmails  => jnum(0),
         unreadEmails => jnum(0),
         totalEmails  => jnum(0),

@@ -1,5 +1,24 @@
 use jmaptest;
 
+# SKIPPED against openemail-core, which serves a FLAT Mailbox namespace and says
+# so in the session capability: RFC 8621 §2 defines `maxMailboxDepth` as "one
+# more than the maximum number of ancestors a Mailbox may have", and this server
+# advertises 1 — i.e. no ancestors — together with `myRights.mayCreateChild:
+# false`. A `Mailbox/set create` carrying `parentId` is therefore refused with
+# `invalidProperties`, which is the specified way to decline it, and this file's
+# FIXTURE cannot be built at all (every case here hangs off a parent/child pair).
+#
+# This is a deliberate architecture, recorded in docs/jmap-design.md §II.2: the
+# store is Gmail-style LABELS, and synthesising hierarchy from slashes would
+# invent phantom parents no label backs and diverge from the IMAP gateway's view
+# of the same store.
+#
+# Skipped rather than DELETED (both these files were briefly deleted outright):
+# a file removed from the oracle takes its coverage with it and leaves no record
+# that a question was ever asked. A skip keeps the question, and the day this
+# server grows nesting the skip is what says which tests to turn back on.
+plan skip_all => "server advertises maxMailboxDepth: 1 (flat Mailbox namespace)";
+
 test {
   my ($self) = @_;
 

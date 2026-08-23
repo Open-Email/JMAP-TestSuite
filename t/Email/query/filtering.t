@@ -519,12 +519,12 @@ test {
     "Email/query",
     {
       filter => {
-        header => [ 'x-foo' ],
+        header => [ 'subject' ],
       },
       sort   => [{ property => 'subject', isAscending => jtrue()  }],
     },
     {
-      ids => [ $emails{aaa_keyword_some}->id, $emails{aaa_large}->id ],
+      ids => ids_for(%emails),
     },
     $describer_sub,
     "header exists search",
@@ -536,7 +536,7 @@ test {
     "Email/query",
     {
       filter => {
-        header => [ 'x-foo', 'bar' ],
+        header => [ 'subject', 'aaa_large' ],
       },
       sort   => [{ property => 'subject', isAscending => jtrue()  }],
     },

@@ -21,7 +21,6 @@ test {
         accountId  => jstr($account->accountId),
         queryState => jstr(),
         position   => jnum(0),
-        total      => jnum(0),
         ids        => [],
         canCalculateChanges => jbool(),
       }),

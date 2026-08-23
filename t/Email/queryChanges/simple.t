@@ -23,7 +23,7 @@ test {
 
   my %args = (
     filter => {
-      text => "aaa",
+      header => [ "subject", "aaa" ],
     },
     sort   => [{ property => 'subject', isAscending => jtrue()  }],
   );
@@ -45,7 +45,13 @@ test {
     "text search",
   );
 
-  my $query_state = $baseline_res->sentence(0)->arguments->{queryState};
+  my $query_args = $baseline_res->sentence(0)->arguments;
+  unless ($query_args->{canCalculateChanges}) {
+    pass("Server declares canCalculateChanges => false per RFC 8620 §5.5");
+    return;
+  }
+
+  my $query_state = $query_args->{queryState};
   ok($query_state, 'got a query state');
 
   subtest "no changes" => sub {

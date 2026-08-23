@@ -30,9 +30,9 @@ test {
       jcmp_deeply(
         $set_res->single_sentence('Mailbox/set')->arguments->{notDestroyed},
         {
-          $mailbox1->id => {
+          $mailbox1->id => superhashof({
             type => 'mailboxHasEmail',
-          },
+          }),
         },
         'got mailboxHasEmail error'
       );

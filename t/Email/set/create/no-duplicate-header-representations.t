@@ -44,7 +44,7 @@ test {
     bcc           => sub { 'bcc@example.org' },
     'Reply-To'    => sub { 'replyTo@example.org' },
     subject       => sub { 'a subject' },
-    Date          => sub { '2018-08-30T12:00:59-04:00' },
+    Date          => sub { 'Thu, 30 Aug 2018 12:00:59 -0400' },
   );
 
   subtest "sanity check" => sub {
@@ -109,10 +109,10 @@ test {
         ],
         superhashof({
           notCreated => {
-            new => {
+            new => superhashof({
               type => 'invalidProperties',
-              properties => any([$hdr], ["header:$raw"]), # either is fine
-            },
+              properties => any([$hdr], ["header:$raw"], superbagof($hdr, "header:$raw")), # any combination is fine
+            }),
           },
         }),
         "Could not provide $hdr and header:$raw"

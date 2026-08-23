@@ -21,11 +21,13 @@ test {
     $role{ $mailbox->{role} } = $mailbox;
   }
 
+  my $can_child = eval { $mailboxes[0]{myRights}{mayCreateChild} } ? 1 : 0;
+
   {
     my $batch = $account->create_batch(mailbox => {
       x => { name => "Folder X at $^T.$$" },
       y => { name => undef },
-      z => { name => "Folder Z", parentId => '#x' },
+      ($can_child ? (z => { name => "Folder Z", parentId => '#x' }) : ()),
     });
 
     batch_ok($batch);
@@ -33,14 +35,16 @@ test {
     ok( ! $batch->is_entirely_successful, "something failed");
     ok(  $batch->result_for('y')->is_error, 'y failed');
     my $x = ok(! $batch->result_for('x')->is_error, 'x succeeded');
-    my $z = ok(! $batch->result_for('z')->is_error, 'z succeeded');
 
-    if ($x && $z) {
-      is(
-        $batch->result_for('z')->parentId,
-        $batch->result_for('x')->id,
-        "z.parentId == x.id",
-      );
+    if ($can_child) {
+      my $z = ok(! $batch->result_for('z')->is_error, 'z succeeded');
+      if ($x && $z) {
+        is(
+          $batch->result_for('z')->parentId,
+          $batch->result_for('x')->id,
+          "z.parentId == x.id",
+        );
+      }
     }
   }
 

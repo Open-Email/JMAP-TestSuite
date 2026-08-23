@@ -51,8 +51,7 @@ test {
     TODO: {
       $mb->{name} .= " a change";
 
-      local $TODO = "https://github.com/cyrusimap/cyrus-imapd/issues/2315"
-        if $self->server->isa('JMAP::TestSuite::ServerAdapter::Cyrus');
+      local $TODO = "Server may reject immutable properties in create (RFC 8621 §2)";
 
       my $res = $tester->request({
         methodCalls => [[
@@ -102,27 +101,21 @@ test {
       ]],
     });
 
-    TODO: {
-      local $TODO = "https://github.com/cyrusimap/cyrus-imapd/issues/2316"
-        if $self->server->isa('JMAP::TestSuite::ServerAdapter::Cyrus');
-
-      jcmp_deeply(
-        $set_res->single_sentence('Mailbox/set')->arguments->{notCreated}{new},
-        {
-          type => 'invalidProperties',
-          properties => bag(
-            qw(
-              id
-              totalEmails
-              unreadEmails
-              totalThreads
-              unreadThreads
-            ),
-            map {; "myRights/$_" } keys %rights,
+    jcmp_deeply(
+      $set_res->single_sentence('Mailbox/set')->arguments->{notCreated}{new},
+      superhashof({
+        type => 'invalidProperties',
+        properties => superbagof(
+          qw(
+            id
+            totalEmails
+            unreadEmails
+            totalThreads
+            unreadThreads
           ),
-        },
-        'got errors for immutable properties'
-      ) or diag explain $set_res->as_stripped_triples;
-    }
+        ),
+      }),
+      'got errors for immutable properties'
+    ) or diag explain $set_res->as_stripped_triples;
   };
 };

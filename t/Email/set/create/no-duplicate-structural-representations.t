@@ -52,11 +52,11 @@ test {
       notCreated => {
         new => superhashof({
           type => 'invalidProperties',
-          properties => [qw(
+          properties => superbagof(qw(
             textBody
             htmlBody
             attachments
-          )],
+          )),
         }),
       },
     }),

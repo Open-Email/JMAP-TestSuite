@@ -37,10 +37,10 @@ test {
       oldState => jstr(),
       newState => jstr(),
       notCreated => {
-        new2 => {
+        new2 => superhashof({
           type => 'invalidProperties',
           properties => [ 'mailboxIds' ],
-        },
+        }),
       },
       created => {
         new => {

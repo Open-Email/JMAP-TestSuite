@@ -12,10 +12,11 @@ test {
   my $tester  = $account->tester;
 
   my $mailbox1 = $account->create_mailbox;
+  my $can_child = $mailbox1->myRights->{mayCreateChild} ? 1 : 0;
 
-  my $mailbox2 = $account->create_mailbox({
-    parentId => $mailbox1->id,
-  });
+  my $mailbox2 = $can_child
+    ? $account->create_mailbox({ parentId => $mailbox1->id })
+    : $account->create_mailbox;
 
   subtest "parentId" => sub {
 
@@ -33,7 +34,11 @@ test {
       my $ids = $res->single_sentence("Mailbox/query")->arguments->{ids};
 
       jcmp_deeply($ids, supersetof($mailbox1->id), 'Got top-level mailbox');
-      jcmp_deeply($ids, noneof($mailbox2->id), 'Did not get sub-mailbox');
+      if ($can_child) {
+        jcmp_deeply($ids, noneof($mailbox2->id), 'Did not get sub-mailbox');
+      } else {
+        jcmp_deeply($ids, supersetof($mailbox2->id), 'Got top-level mailbox 2');
+      }
     };
 
     subtest "has a parentId" => sub {
@@ -49,7 +54,11 @@ test {
 
       my $ids = $res->single_sentence("Mailbox/query")->arguments->{ids};
 
-      jcmp_deeply($ids, [ $mailbox2->id ], 'Got our one child mailbox');
+      if ($can_child) {
+        jcmp_deeply($ids, [ $mailbox2->id ], 'Got our one child mailbox');
+      } else {
+        jcmp_deeply($ids, [ ], 'Got no child mailboxes in flat namespace');
+      }
     };
   };
 

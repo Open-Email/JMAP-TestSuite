@@ -36,9 +36,10 @@ test {
       my $get_res = $tester->request([[
         "Mailbox/get" => { ids => \@ids },
       ]]);
-      my @non_inbox = grep { ($_->{role} // '') ne 'inbox' }
+      # Filter out system role mailboxes (inbox, sent, drafts, trash, archive, etc.)
+      my @non_system = grep { !$_->{role} }
         @{ $get_res->single_sentence("Mailbox/get")->arguments->{list} };
-      is(@non_inbox, 0, "No non-INBOX mailboxes exist");
+      is(@non_system, 0, "No custom non-system mailboxes exist");
     } else {
       pass("No mailboxes at all");
     }

@@ -15,6 +15,7 @@ sub mailbox {
   my %required = (
     id            => jstr,
     name          => jstr,
+    isSubscribed  => jbool,
     totalEmails   => jnum,
     unreadEmails  => jnum,
     totalThreads  => jnum,
@@ -32,7 +33,6 @@ sub mailbox {
         mayRename
         mayDelete
         maySubmit
-        mayAdmin
       )
     }),
   );

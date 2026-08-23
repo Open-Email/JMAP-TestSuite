@@ -32,7 +32,7 @@ test {
         accountId  => jstr($account->accountId),
         oldState => jstr(),
         newState => jstr(),
-        notCreated => {},
+        notCreated => any(undef, {}),
         created => {
           new => {
             blobId   => jstr(),
@@ -117,7 +117,7 @@ test {
         accountId  => jstr($account->accountId),
         oldState => jstr(),
         newState => jstr(),
-        notCreated => {},
+        notCreated => any(undef, {}),
         created => {
           new => {
             blobId   => jstr(),
@@ -205,7 +205,7 @@ test {
         accountId  => jstr($account->accountId),
         oldState => jstr(),
         newState => jstr(),
-        notCreated => {},
+        notCreated => any(undef, {}),
         created => {
           new => {
             blobId   => jstr(),

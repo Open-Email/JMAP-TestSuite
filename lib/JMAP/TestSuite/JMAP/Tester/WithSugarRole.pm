@@ -118,8 +118,10 @@ sub request_ok {
 
         ok($res_sentence, "Found a sentence named $expect_name");
 
+        my $args_to_compare = _strip_unasked_descriptions($res_sentence->arguments, $expect_struct);
+
         jcmp_deeply(
-          $res_sentence->arguments,
+          $args_to_compare,
           $expect_struct,
           "Sentence for cid '$cid' in response to '$name' matches up"
         ) or $failures++;
@@ -138,6 +140,31 @@ sub request_ok {
 
   # So you can ->request_ok(..) or foo();
   return ! $failures;
+}
+
+sub _strip_unasked_descriptions {
+  my ($got, $expected) = @_;
+  return $got unless ref $got eq 'HASH';
+
+  my $exp_hash = ref $expected eq 'HASH' ? $expected
+               : (ref($expected) && ref($expected) =~ /^Test::Deep::/ && ref($expected->{val}) eq 'HASH') ? $expected->{val}
+               : (Scalar::Util::blessed($expected) && $expected->can('val')) ? $expected->val
+               : undef;
+
+  my %copy;
+  for my $k (keys %$got) {
+    if ($k eq 'description' && $exp_hash && !exists $exp_hash->{description}) {
+      next;
+    }
+    my $v = $got->{$k};
+    if (ref $v eq 'HASH') {
+      my $exp_sub = $exp_hash ? $exp_hash->{$k} : undef;
+      $copy{$k} = _strip_unasked_descriptions($v, $exp_sub);
+    } else {
+      $copy{$k} = $v;
+    }
+  }
+  return \%copy;
 }
 
 1;

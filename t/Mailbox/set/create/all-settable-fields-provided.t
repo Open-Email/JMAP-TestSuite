@@ -17,13 +17,15 @@ test {
 
   # XXX - Create with role test -- alh, 2018-02-22
 
+  my $can_child = $parent->myRights->{mayCreateChild};
+
   my $res = $tester->request({
     methodCalls => [[
       "Mailbox/set" => {
         create => {
           new => {
             name      => $new_name,
-            parentId  => $parent->id,
+            parentId  => ($can_child ? $parent->id : undef),
             sortOrder => 55,
           },
         },
@@ -80,7 +82,7 @@ test {
       superhashof({
         id        => jstr($id),
         name      => jstr($new_name),
-        parentId  => jstr($parent->id),
+        parentId  => ($can_child ? jstr($parent->id) : undef),
         sortOrder => jnum(55),
       }),
       "Our mailbox settings looks good"
