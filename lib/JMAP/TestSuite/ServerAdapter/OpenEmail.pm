@@ -175,7 +175,10 @@ sub pristine_account {
   my $local   = $self->_fresh_local_part;
   my $address = $local . '@' . $self->domain;
 
-  my $mailbox = $self->_api(POST => '/mailboxes', {
+  # The identity/mail-facet split (core docs/identity-design.md Part X): the
+  # SUBJECT — the row itself and its credentials — lives under /identities,
+  # while /mailboxes/:id is the MAIL FACET only.  Both spell the same ULID.
+  my $mailbox = $self->_api(POST => '/identities', {
     accountId      => $self->account_id,
     primaryAddress => $address,
   });
@@ -191,7 +194,7 @@ sub pristine_account {
     mailboxId       => $mailbox_id,
   });
 
-  my $cred = $self->_api(POST => "/mailboxes/$mailbox_id/credentials", {
+  my $cred = $self->_api(POST => "/identities/$mailbox_id/credentials", {
     kind => 'app_password',
   });
 
