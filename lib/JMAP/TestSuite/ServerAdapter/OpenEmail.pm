@@ -175,7 +175,11 @@ sub pristine_account {
   my $local   = $self->_fresh_local_part;
   my $address = $local . '@' . $self->domain;
 
-  my $mailbox = $self->_api(POST => '/mailboxes', {
+  # Mailbox creation and credential minting live under `/identities`; the
+  # read side (GET /mailboxes/{id}, messages, uploads, …) kept the old prefix.
+  # Posting to `/mailboxes` 404s, which surfaces as every test file dying in
+  # any_account rather than as anything resembling a conformance failure.
+  my $mailbox = $self->_api(POST => '/identities', {
     accountId      => $self->account_id,
     primaryAddress => $address,
   });
@@ -191,7 +195,7 @@ sub pristine_account {
     mailboxId       => $mailbox_id,
   });
 
-  my $cred = $self->_api(POST => "/mailboxes/$mailbox_id/credentials", {
+  my $cred = $self->_api(POST => "/identities/$mailbox_id/credentials", {
     kind => 'app_password',
   });
 
