@@ -39,12 +39,15 @@ test {
     ],
     superhashof({
       created => {
-        new => {
+        # RFC 8620 §6: a server that gives a referenced blob a new blobId
+        # "MUST return any properties that contain a changed blobId in the
+        # created/updated response", so the body property may come back too.
+        new => superhashof({
           id       => jstr(),
           size     => jnum(),
           blobId   => jstr(),
           threadId => jstr(),
-        },
+        }),
       },
     }),
     "htmlBody create"
